@@ -59,30 +59,72 @@ export interface BaseLesson {
     unlockPrice: number;
 }
 
-// Interfaces for the "Source of Truth" Tree (Input Config)
-// These omit properties that are inherited/computed from the tree structure
-export interface LessonConfig {
-    id: string; // Just the suffix? OR full ID? Let's keep full ID for grepability
-    title: string;
+// -------------------------------------------------------------
+// STRICT SOURCE OF TRUTH TYPES
+// -------------------------------------------------------------
+
+export interface Hint {
     content: string;
+    cost: number;
+}
+
+export interface TheoryConfig {
+    id: string;
+    title: string;
+    type: 'lesson';
+    content: string;
+    xp: number;
     coinReward: number;
     unlockPrice: number;
-    // Type-specific fields
-    type: LessonType;
+}
+
+export interface ChallengeConfig {
+    id: string;
+    title: string;
+    type: 'code';
+    content: string;
     xp: number;
-    // For Code
-    initialCode?: string;
-    tests?: Test[];
-    solution?: string;
-    hints?: Hint[];
-    // For Quiz
-    questions?: QuizQuestion[];
+    coinReward: number;
+    unlockPrice: number;
+    initialCode: string;
+    tests: Test[];
+    solution: string;
+    hints: Hint[];
+}
+
+export interface QuizQuestion {
+    id: string;
+    question: string;
+    options: string[];
+    correctAnswer: number;
+    explanation: string;
+}
+
+export interface QuizConfig {
+    id: string;
+    title: string;
+    type: 'quiz';
+    content: string;
+    xp: number;
+    coinReward: number;
+    unlockPrice: number;
+    questions: QuizQuestion[];
+}
+
+export type LessonConfig = TheoryLesson | CodeChallenge | QuizLesson; // For legacy/mixed usage if needed, but we prefer strict configs below
+
+// A Chapter Section groups Theory (Reading) and Challenges (Doing)
+export interface ChapterSection {
+    title?: string; // Optional section title
+    theory: TheoryConfig[]; // List of reading materials
+    challenges: ChallengeConfig[]; // List of exercises
 }
 
 export interface ChapterConfig {
     id: ChapterID;
-    title: string; // "Getting Started" (without "Chapter N: ")
-    lessons: LessonConfig[];
+    title: string;
+    sections: ChapterSection[];
+    quiz: QuizConfig; // Mandatory Quiz per Chapter
 }
 
 export interface PhaseConfig {
@@ -100,11 +142,6 @@ export interface TheoryLesson extends BaseLesson {
     xp: number;
 }
 
-export interface Hint {
-    content: string;
-    cost: number;
-}
-
 export interface CodeChallenge extends BaseLesson {
     type: 'code';
     xp: number;
@@ -112,14 +149,6 @@ export interface CodeChallenge extends BaseLesson {
     tests: Test[];
     solution: string;
     hints: Hint[];
-}
-
-export interface QuizQuestion {
-    id: string;
-    question: string;
-    options: string[];
-    correctAnswer: number;
-    explanation: string;
 }
 
 export interface QuizLesson extends BaseLesson {

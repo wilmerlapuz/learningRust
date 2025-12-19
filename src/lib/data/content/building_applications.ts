@@ -7,15 +7,18 @@ export const buildingApplications: PhaseConfig = {
         {
             id: 'ch12',
             title: 'I/O Project: Minigrep',
-            lessons: [
+            sections: [
                 {
-                    id: 'ch12-refactoring',
-                    title: 'Separation of Concerns',
-                    type: 'lesson',
-                    xp: 10,
-                    coinReward: 5,
-                    unlockPrice: 0,
-                    content: `
+                    title: 'Refactoring & TDD',
+                    theory: [
+                        {
+                            id: 'ch12-refactoring',
+                            title: 'Separation of Concerns',
+                            type: 'lesson',
+                            xp: 10,
+                            coinReward: 5,
+                            unlockPrice: 0,
+                            content: `
 # Separation of Concerns
 
 It is best practice to separate your business logic from the command-line argument parsing.
@@ -38,15 +41,17 @@ impl Config {
 }
 \`\`\`
 `
-                },
-                {
-                    id: 'ch12-tdd',
-                    title: 'Test Driven Development',
-                    type: 'code',
-                    xp: 30,
-                    coinReward: 15,
-                    unlockPrice: 20,
-                    content: `
+                        }
+                    ],
+                    challenges: [
+                        {
+                            id: 'ch12-tdd',
+                            title: 'Test Driven Development',
+                            type: 'code',
+                            xp: 30,
+                            coinReward: 15,
+                            unlockPrice: 20,
+                            content: `
 # Test Driven Development (TDD)
 
 In TDD, we write the test **before** the code (Red-Green-Refactor).
@@ -58,7 +63,7 @@ We want a \`search\` function that finds lines containing a query.
    - Iterate through lines.
    - If line contains query, add to results.
 `,
-                    initialCode: `pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+                            initialCode: `pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     // Implement logic here
     vec![]
 }
@@ -80,17 +85,17 @@ Pick three.";
 }
 
 fn main() {}`,
-                    tests: [
-                        {
-                            description: 'Finds "duct"',
-                            test: `search("duct", "Rust:\nsafe, fast, productive.\nPick three.") == vec!["safe, fast, productive."]`
-                        },
-                        {
-                            description: 'Finds "Pick"',
-                            test: `search("Pick", "Rust:\nPick three.") == vec!["Pick three."]`
-                        }
-                    ],
-                    solution: `pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+                            tests: [
+                                {
+                                    description: 'Finds "duct"',
+                                    test: `search("duct", "Rust:\nsafe, fast, productive.\nPick three.") == vec!["safe, fast, productive."]`
+                                },
+                                {
+                                    description: 'Finds "Pick"',
+                                    test: `search("Pick", "Rust:\nPick three.") == vec!["Pick three."]`
+                                }
+                            ],
+                            solution: `pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     let mut results = Vec::new();
     for line in contents.lines() {
         if line.contains(query) {
@@ -100,29 +105,57 @@ fn main() {}`,
     results
 }
 fn main() {}`,
-                    hints: [
-                        {
-                            content: "Use `contents.lines()` to iterate over lines.",
-                            cost: 0
-                        },
-                        {
-                            content: "Check `if line.contains(query)`.",
-                            cost: 5
-                        },
-                        {
-                            content: "Push matching lines to a vector and return it.",
-                            cost: 10
+                            hints: [
+                                {
+                                    content: "Use `contents.lines()` to iterate over lines.",
+                                    cost: 0
+                                },
+                                {
+                                    content: "Check `if line.contains(query)`.",
+                                    cost: 5
+                                },
+                                {
+                                    content: "Push matching lines to a vector and return it.",
+                                    cost: 10
+                                }
+                            ]
                         }
                     ]
                 },
                 {
-                    id: 'ch12-env-vars',
-                    title: 'Environment Variables',
-                    type: 'code',
-                    xp: 30,
-                    coinReward: 15,
-                    unlockPrice: 20,
-                    content: `
+                    title: 'Environment & Errors',
+                    theory: [
+                        {
+                            id: 'ch12-stderr',
+                            title: 'Standard Error',
+                            type: 'lesson',
+                            xp: 10,
+                            coinReward: 5,
+                            unlockPrice: 0,
+                            content: `
+# Standard Error
+
+By default, \`println!\` prints to standard output (stdout).
+Errors should verify be printed to standard error (stderr) so they can be separated from program output (e.g. valid data).
+
+### eprintln!
+Rust provides the \`eprintln!\` macro for this.
+
+\`\`\`rust
+eprintln!("Problem parsing arguments: {}", err);
+\`\`\`
+`
+                        }
+                    ],
+                    challenges: [
+                        {
+                            id: 'ch12-env-vars',
+                            title: 'Environment Variables',
+                            type: 'code',
+                            xp: 30,
+                            coinReward: 15,
+                            unlockPrice: 20,
+                            content: `
 # Environment Variables
 
 Sometimes we want to configure our tool without changing arguments, using Environment Variables.
@@ -134,7 +167,7 @@ Update the \`Config::new\` function to check for an environment variable named \
 2. It returns a \`Result\`. \`is_ok()\` returns true if the var is set to *anything*.
 3. Set the \`ignore_case\` field on Config based on this.
 `,
-                    initialCode: `use std::env;
+                            initialCode: `use std::env;
 
 struct Config {
     query: String,
@@ -168,22 +201,17 @@ fn main() {
     let config = Config::new(&args).unwrap();
     println!("Ignore case: {}", config.ignore_case);
 }`,
-                    tests: [
-                        {
-                            description: 'Uses env::var',
-                            test: 'USER_CODE.contains("env::var")'
-                        },
-                        // We can't easily mock env vars in this runner without modification, 
-                        // so we primarily test syntax and "happy path" logic if possible.
-                        // Or we can simulate it if we mock std::env (hard in this runner).
-                        // We will check if they set the boolean correctly based on a hypothetical call.
-                        // Actually, for this specific challenge, syntax check is safest unless we mock.
-                        {
-                            description: 'Sets ignore_case',
-                            test: 'USER_CODE.contains("ignore_case")' // Heuristic
-                        }
-                    ],
-                    solution: `use std::env;
+                            tests: [
+                                {
+                                    description: 'Uses env::var',
+                                    test: 'USER_CODE.contains("env::var")'
+                                },
+                                {
+                                    description: 'Sets ignore_case',
+                                    test: 'USER_CODE.contains("ignore_case")'
+                                }
+                            ],
+                            solution: `use std::env;
 
 struct Config {
     query: String,
@@ -210,52 +238,82 @@ impl Config {
     }
 }
 fn main() {}`,
-                    hints: [
-                        {
-                            content: "Call `env::var(\"IGNORE_CASE\")`.",
-                            cost: 0
-                        },
-                        {
-                            content: "Use `.is_ok()` to check if it's set.",
-                            cost: 5
+                            hints: [
+                                {
+                                    content: "Call `env::var(\"IGNORE_CASE\")`.",
+                                    cost: 0
+                                },
+                                {
+                                    content: "Use `.is_ok()` to check if it's set.",
+                                    cost: 5
+                                }
+                            ]
                         }
                     ]
-                },
-                {
-                    id: 'ch12-stderr',
-                    title: 'Standard Error',
-                    type: 'lesson',
-                    xp: 10,
-                    coinReward: 5,
-                    unlockPrice: 0,
-                    content: `
-# Standard Error
-
-By default, \`println!\` prints to standard output (stdout).
-Errors should verify be printed to standard error (stderr) so they can be separated from program output (e.g. valid data).
-
-### eprintln!
-Rust provides the \`eprintln!\` macro for this.
-
-\`\`\`rust
-eprintln!("Problem parsing arguments: {}", err);
-\`\`\`
-`
                 }
-            ]
+            ],
+            quiz: {
+                id: 'ch12-quiz',
+                title: 'Chapter 12 Quiz',
+                type: 'quiz',
+                xp: 50,
+                coinReward: 25,
+                unlockPrice: 0,
+                content: 'Test understanding of CLI concepts.',
+                questions: [
+                    {
+                        id: 'q1',
+                        question: 'Where should most logic live in a CLI tool?',
+                        options: [
+                            'In main.rs',
+                            'In lib.rs',
+                            'In a generic script',
+                            'In Cargo.toml'
+                        ],
+                        correctAnswer: 1,
+                        explanation: 'Logic should be in `lib.rs`, leaving `main.rs` small and focused on parsing args.'
+                    },
+                    {
+                        id: 'q2',
+                        question: 'How do you read command line arguments?',
+                        options: [
+                            'std::env::args()',
+                            'std::io::read_args()',
+                            'process.argv',
+                            'cmd::args'
+                        ],
+                        correctAnswer: 0,
+                        explanation: '`std::env::args()` returns an iterator of command line arguments.'
+                    },
+                    {
+                        id: 'q3',
+                        question: 'What is Test Driven Development?',
+                        options: [
+                            'Writing code then testing it manually',
+                            'Writing tests before writing the implementation',
+                            'Using a QA team'
+                        ],
+                        correctAnswer: 1,
+                        explanation: 'TDD follows "Red-Green-Refactor": Write a failing test first, then fix it.'
+                    }
+                ]
+            }
         },
         {
             id: 'ch13',
             title: 'Iterators & Closures',
-            lessons: [
+            sections: [
                 {
-                    id: 'ch13-closures',
-                    title: 'Anonymous Functions',
-                    type: 'lesson',
-                    xp: 10,
-                    coinReward: 5,
-                    unlockPrice: 0,
-                    content: `
+                    title: 'Functional Features',
+                    theory: [
+                        {
+                            id: 'ch13-closures',
+                            title: 'Anonymous Functions',
+                            type: 'lesson',
+                            xp: 10,
+                            coinReward: 5,
+                            unlockPrice: 0,
+                            content: `
 # Closures
 
 Closures are anonymous functions that can capture their environment.
@@ -272,15 +330,17 @@ let x = 10;
 let equals_x = |z| z == x; // captures x
 \`\`\`
 `
-                },
-                {
-                    id: 'ch13-iterators',
-                    title: 'Iterator Adaptors',
-                    type: 'code',
-                    xp: 30,
-                    coinReward: 15,
-                    unlockPrice: 20,
-                    content: `
+                        }
+                    ],
+                    challenges: [
+                        {
+                            id: 'ch13-iterators',
+                            title: 'Iterator Adaptors',
+                            type: 'code',
+                            xp: 30,
+                            coinReward: 15,
+                            unlockPrice: 20,
+                            content: `
 # Adaptors: map and filter
 
 Iterators are lazy. You must consume them (e.g., with \`collect\`) to do anything.
@@ -294,7 +354,7 @@ Implement \`sum_of_squares_of_evens(n: u32) -> u32\`.
 3. Map to square (\`x * x\`).
 4. Sum the results (\`.sum()\`).
 `,
-                    initialCode: `fn sum_of_squares_of_evens(n: u32) -> u32 {
+                            initialCode: `fn sum_of_squares_of_evens(n: u32) -> u32 {
     (0..n)
         // .filter(...)
         // .map(...)
@@ -304,56 +364,106 @@ Implement \`sum_of_squares_of_evens(n: u32) -> u32\`.
 fn main() {
     println!("{}", sum_of_squares_of_evens(10)); // 0^2 + 2^2 + 4^2 + 6^2 + 8^2 = 0+4+16+36+64 = 120
 }`,
-                    tests: [
-                        {
-                            description: 'Sum for 10 is 120',
-                            test: 'sum_of_squares_of_evens(10) == 120'
-                        },
-                        {
-                            description: 'Uses .filter',
-                            test: 'USER_CODE.contains(".filter")'
-                        },
-                        {
-                            description: 'Uses .map',
-                            test: 'USER_CODE.contains(".map")'
-                        }
-                    ],
-                    solution: `fn sum_of_squares_of_evens(n: u32) -> u32 {
+                            tests: [
+                                {
+                                    description: 'Sum for 10 is 120',
+                                    test: 'sum_of_squares_of_evens(10) == 120'
+                                },
+                                {
+                                    description: 'Uses .filter',
+                                    test: 'USER_CODE.contains(".filter")'
+                                },
+                                {
+                                    description: 'Uses .map',
+                                    test: 'USER_CODE.contains(".map")'
+                                }
+                            ],
+                            solution: `fn sum_of_squares_of_evens(n: u32) -> u32 {
     (0..n)
         .filter(|x| x % 2 == 0)
         .map(|x| x * x)
         .sum()
 }
 fn main() {}`,
-                    hints: [
-                        {
-                            content: "Use `.filter(|x| x % 2 == 0)`.",
-                            cost: 0
-                        },
-                        {
-                            content: "Use `.map(|x| x * x)`.",
-                            cost: 5
-                        },
-                        {
-                            content: "Finish with `.sum()`.",
-                            cost: 5
+                            hints: [
+                                {
+                                    content: "Use `.filter(|x| x % 2 == 0)`.",
+                                    cost: 0
+                                },
+                                {
+                                    content: "Use `.map(|x| x * x)`.",
+                                    cost: 5
+                                },
+                                {
+                                    content: "Finish with `.sum()`.",
+                                    cost: 5
+                                }
+                            ]
                         }
                     ]
                 }
-            ]
+            ],
+            quiz: {
+                id: 'ch13-quiz',
+                title: 'Chapter 13 Quiz',
+                type: 'quiz',
+                xp: 50,
+                coinReward: 25,
+                unlockPrice: 0,
+                content: 'Check your knowledge of functional concepts in Rust.',
+                questions: [
+                    {
+                        id: 'q1',
+                        question: 'What is a closure?',
+                        options: [
+                            'A function that never ends',
+                            'An anonymous function that can capture variables',
+                            'A module ending'
+                        ],
+                        correctAnswer: 1,
+                        explanation: 'Closures are like functions but can capture values from the scope in which they are defined.'
+                    },
+                    {
+                        id: 'q2',
+                        question: 'Are iterators in Rust lazy?',
+                        options: [
+                            'Yes, they do nothing until consumed',
+                            'No, they execute immediately',
+                            'Only sometimes'
+                        ],
+                        correctAnswer: 0,
+                        explanation: 'Iterators are lazy and require a consuming adaptor (like `collect` or `sum`) to produce results.'
+                    },
+                    {
+                        id: 'q3',
+                        question: 'Which method creates an iterator from a vector?',
+                        options: [
+                            'to_iter()',
+                            'iter()',
+                            'loop()',
+                            'start()'
+                        ],
+                        correctAnswer: 1,
+                        explanation: '`iter()` creates an iterator over immutable references.'
+                    }
+                ]
+            }
         },
         {
             id: 'ch14',
             title: 'Cargo & Crates.io',
-            lessons: [
+            sections: [
                 {
-                    id: 'ch14-release-profiles',
-                    title: 'Release Profiles',
-                    type: 'lesson',
-                    xp: 10,
-                    coinReward: 5,
-                    unlockPrice: 0,
-                    content: `
+                    title: 'Advanced Cargo',
+                    theory: [
+                        {
+                            id: 'ch14-release-profiles',
+                            title: 'Release Profiles',
+                            type: 'lesson',
+                            xp: 10,
+                            coinReward: 5,
+                            unlockPrice: 0,
+                            content: `
 # Release Profiles
 
 Rust has two main profiles: \`dev\` and \`release\`.
@@ -370,76 +480,15 @@ opt-level = 0
 opt-level = 3
 \`\`\`
 `
-                },
-                {
-                    id: 'ch14-doc-comments',
-                    title: 'Doc Comments',
-                    type: 'code',
-                    xp: 30,
-                    coinReward: 15,
-                    unlockPrice: 20,
-                    content: `
-# Documentation Comments
-
-Rust has a special comment syntax: \`///\`.
-It supports Markdown and is used to generate HTML documentation.
-
-### Challenge
-1. Add a doc comment \`/// Adds one to the number given.\` above the function.
-2. Add a section header \`# Examples\` inside the comment.
-3. Add a code block showing how to use it.
-`,
-                    initialCode: `// Add doc comments here
-// /// Adds one...
-pub fn add_one(x: i32) -> i32 {
-    x + 1
-}
-
-fn main() {
-    println!("{}", add_one(5));
-}`,
-                    tests: [
-                        {
-                            description: 'Has /// comment',
-                            test: 'USER_CODE.contains("///")'
                         },
                         {
-                            description: 'Has # Examples section',
-                            test: 'USER_CODE.contains("# Examples")'
-                        }
-                    ],
-                    solution: `/// Adds one to the number given.
-///
-/// # Examples
-///
-/// \`\`\`
-/// let arg = 5;
-/// let answer = my_crate::add_one(arg);
-/// assert_eq!(6, answer);
-/// \`\`\`
-pub fn add_one(x: i32) -> i32 {
-    x + 1
-}
-fn main() {}`,
-                    hints: [
-                        {
-                            content: "Use triple slashes \`///\` for doc comments.",
-                            cost: 0
-                        },
-                        {
-                            content: "Markdown headers are supported: \`/// # Examples\`.",
-                            cost: 5
-                        }
-                    ]
-                },
-                {
-                    id: 'ch14-workspaces',
-                    title: 'Cargo Workspaces',
-                    type: 'lesson',
-                    xp: 10,
-                    coinReward: 5,
-                    unlockPrice: 0,
-                    content: `
+                            id: 'ch14-workspaces',
+                            title: 'Cargo Workspaces',
+                            type: 'lesson',
+                            xp: 10,
+                            coinReward: 5,
+                            unlockPrice: 0,
+                            content: `
 # Workspaces
 
 As projects grow, splitting them into multiple crates is wise. A **workspace** is a set of packages that share the same \`Cargo.lock\` and output directory.
@@ -463,54 +512,119 @@ members = [
 ]
 \`\`\`
 `
-                },
-                {
-                    id: 'ch14-quiz',
-                    title: 'Cargo Quiz',
-                    type: 'quiz',
-                    xp: 50,
-                    coinReward: 25,
-                    unlockPrice: 0,
-                    content: 'Test your knowledge of Cargo Workspaces and Releases.',
-                    questions: [
+                        }
+                    ],
+                    challenges: [
                         {
-                            id: 'q1',
-                            question: 'What is the default release profile for `cargo build`?',
-                            options: [
-                                'release',
-                                'dev',
-                                'debug',
-                                'opt'
+                            id: 'ch14-doc-comments',
+                            title: 'Doc Comments',
+                            type: 'code',
+                            xp: 30,
+                            coinReward: 15,
+                            unlockPrice: 20,
+                            content: `
+# Documentation Comments
+
+Rust has a special comment syntax: \`///\`.
+It supports Markdown and is used to generate HTML documentation.
+
+### Challenge
+1. Add a doc comment \`/// Adds one to the number given.\` above the function.
+2. Add a section header \`# Examples\` inside the comment.
+3. Add a code block showing how to use it.
+`,
+                            initialCode: `// Add doc comments here
+// /// Adds one...
+pub fn add_one(x: i32) -> i32 {
+    x + 1
+}
+
+fn main() {
+    println!("{}", add_one(5));
+}`,
+                            tests: [
+                                {
+                                    description: 'Has /// comment',
+                                    test: 'USER_CODE.contains("///")'
+                                },
+                                {
+                                    description: 'Has # Examples section',
+                                    test: 'USER_CODE.contains("# Examples")'
+                                }
                             ],
-                            correctAnswer: 1,
-                            explanation: '`dev` is the default profile, optimized for compile speed and debugging.'
-                        },
-                        {
-                            id: 'q2',
-                            question: 'What is a Cargo Workspace?',
-                            options: [
-                                'A folder with a .vscode directory',
-                                'A single library crate',
-                                'A set of packages that share the same Cargo.lock and output directory',
-                            ],
-                            correctAnswer: 2,
-                            explanation: 'Workspaces allow you to manage multiple related packages together.'
-                        },
-                        {
-                            id: 'q3',
-                            question: 'Where do you publish Rust crates?',
-                            options: [
-                                'npm',
-                                'crates.io',
-                                'maven',
-                                'pypi'
-                            ],
-                            correctAnswer: 1,
-                            explanation: 'crates.io is the official Rust package registry.'
+                            solution: `/// Adds one to the number given.
+///
+/// # Examples
+///
+/// \`\`\`
+/// let arg = 5;
+/// let answer = my_crate::add_one(arg);
+/// assert_eq!(6, answer);
+/// \`\`\`
+pub fn add_one(x: i32) -> i32 {
+    x + 1
+}
+fn main() {}`,
+                            hints: [
+                                {
+                                    content: "Use triple slashes \`///\` for doc comments.",
+                                    cost: 0
+                                },
+                                {
+                                    content: "Markdown headers are supported: \`/// # Examples\`.",
+                                    cost: 5
+                                }
+                            ]
                         }
                     ]
                 }
-            ]
+            ],
+            quiz: {
+                id: 'ch14-quiz',
+                title: 'Chapter 14 Quiz',
+                type: 'quiz',
+                xp: 50,
+                coinReward: 25,
+                unlockPrice: 0,
+                content: 'Test your knowledge of Cargo Workspaces and Releases.',
+                questions: [
+                    {
+                        id: 'q1',
+                        question: 'What is the default release profile for `cargo build`?',
+                        options: [
+                            'release',
+                            'dev',
+                            'debug',
+                            'opt'
+                        ],
+                        correctAnswer: 1,
+                        explanation: '`dev` is the default profile, optimized for compile speed and debugging.'
+                    },
+                    {
+                        id: 'q2',
+                        question: 'What is a Cargo Workspace?',
+                        options: [
+                            'A folder with a .vscode directory',
+                            'A single library crate',
+                            'A set of packages that share the same Cargo.lock and output directory',
+                        ],
+                        correctAnswer: 2,
+                        explanation: 'Workspaces allow you to manage multiple related packages together.'
+                    },
+                    {
+                        id: 'q3',
+                        question: 'Where do you publish Rust crates?',
+                        options: [
+                            'npm',
+                            'crates.io',
+                            'maven',
+                            'pypi'
+                        ],
+                        correctAnswer: 1,
+                        explanation: 'crates.io is the official Rust package registry.'
+                    }
+                ]
+            }
         }
     ]
 };

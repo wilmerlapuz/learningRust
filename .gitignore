@@ -21,3 +21,16 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Rust
+target/
+**/*.rs.bk
+
+# Local Artifacts
+rust-book-source/
+server.log
+temp_rust_code_*/
+
+# Editor
+.idea/
+.vscode/

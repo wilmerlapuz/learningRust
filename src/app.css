@@ -1,0 +1,66 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-slate-900: #18181b; /* Zinc 900 */
+  --color-slate-950: #09090b; /* Zinc 950 */
+  
+  --font-display: "Playfair Display", serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-slate-200 antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+.prose-invert {
+  --tw-prose-body: #94a3b8;
+  --tw-prose-headings: #f8fafc;
+  --tw-prose-links: #facc15;
+  --tw-prose-bold: #f8fafc;
+  --tw-prose-code: #f1f5f9;
+  --tw-prose-pre-code: #e2e8f0;
+  --tw-prose-pre-bg: #1e293b;
+}
+
+/* Remove default backticks from inline code */
+.prose :where(code):not(:where([class~="not-prose"] *))::before {
+  content: "";
+}
+.prose :where(code):not(:where([class~="not-prose"] *))::after {
+  content: "";
+}
+
+/* Premium Dark Scrollbar */
+@layer base {
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-zinc-800/50 rounded-full hover:bg-zinc-700/80 transition-colors;
+    border: 1px solid transparent;
+    background-clip: content-box;
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}
+
+/* Firefox */
+@supports (scrollbar-color: auto) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #27272a transparent; /* zinc-800 transparent */
+  }
+}
